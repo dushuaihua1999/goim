@@ -14,13 +14,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bilibili/discovery/naming"
-	resolver "github.com/bilibili/discovery/naming/grpc"
 	"github.com/Terry-Mao/goim/internal/comet"
 	"github.com/Terry-Mao/goim/internal/comet/conf"
 	"github.com/Terry-Mao/goim/internal/comet/grpc"
 	md "github.com/Terry-Mao/goim/internal/logic/model"
 	"github.com/Terry-Mao/goim/pkg/ip"
+	"github.com/bilibili/discovery/naming"
+	resolver "github.com/bilibili/discovery/naming/grpc"
 	log "github.com/golang/glog"
 )
 
@@ -38,14 +38,18 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	println(conf.Conf.Debug)
 	log.Infof("goim-comet [version: %s env: %+v] start", ver, conf.Conf.Env)
+
 	// register discovery
 	dis := naming.New(conf.Conf.Discovery)
 	resolver.Register(dis)
-	// new comet server
+
+	// new comet server 解决 auth
 	srv := comet.NewServer(conf.Conf)
 	if err := comet.InitWhitelist(conf.Conf.Whitelist); err != nil {
 		panic(err)
 	}
+
+	// 解决接受 websocket 与 tcp
 	if err := comet.InitTCP(srv, conf.Conf.TCP.Bind, runtime.NumCPU()); err != nil {
 		panic(err)
 	}
@@ -57,9 +61,11 @@ func main() {
 			panic(err)
 		}
 	}
-	// new grpc server
+
+	// new grpc server 解决push
 	rpcSrv := grpc.New(conf.Conf.RPCServer, srv)
 	cancel := register(dis, srv)
+
 	// signal
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -87,6 +93,7 @@ func register(dis *naming.Discovery, srv *comet.Server) context.CancelFunc {
 	env := conf.Conf.Env
 	addr := ip.InternalIP()
 	_, port, _ := net.SplitHostPort(conf.Conf.RPCServer.Addr)
+	// 服务实例
 	ins := &naming.Instance{
 		Region:   env.Region,
 		Zone:     env.Zone,

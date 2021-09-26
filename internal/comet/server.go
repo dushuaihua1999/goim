@@ -58,7 +58,7 @@ type Server struct {
 	buckets   []*Bucket // subkey bucket
 	bucketIdx uint32
 
-	serverID  string
+	serverID  string    // server唯一标识
 	rpcClient logic.LogicClient
 }
 

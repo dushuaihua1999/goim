@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bilibili/discovery/naming"
 	"github.com/BurntSushi/toml"
 	xtime "github.com/Terry-Mao/goim/pkg/time"
+	"github.com/bilibili/discovery/naming"
 )
 
 var (
@@ -35,7 +35,7 @@ func init() {
 		defOffline, _ = strconv.ParseBool(os.Getenv("OFFLINE"))
 		defDebug, _   = strconv.ParseBool(os.Getenv("DEBUG"))
 	)
-	flag.StringVar(&confPath, "conf", "comet-example.toml", "default config path.")
+	flag.StringVar(&confPath, "conf", "C:\\GoProject\\src\\goim\\cmd\\comet\\comet-example.toml", "default config path.")
 	flag.StringVar(&region, "region", os.Getenv("REGION"), "avaliable region. or use REGION env variable, value: sh etc.")
 	flag.StringVar(&zone, "zone", os.Getenv("ZONE"), "avaliable zone. or use ZONE env variable, value: sh001/sh002 etc.")
 	flag.StringVar(&deployEnv, "deploy.env", os.Getenv("DEPLOY_ENV"), "deploy env. or use DEPLOY_ENV env variable, value: dev/fat1/uat/pre/prod etc.")

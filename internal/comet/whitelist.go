@@ -25,6 +25,7 @@ func InitWhitelist(c *conf.Whitelist) (err error) {
 		whitelist = new(Whitelist)
 		whitelist.log = log.New(f, "", log.LstdFlags)
 		whitelist.list = make(map[int64]struct{})
+		// 给需要加入白名单的对象一个空的struct用于占位
 		for _, mid = range c.Whitelist {
 			whitelist.list[mid] = struct{}{}
 		}
